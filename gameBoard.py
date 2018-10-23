@@ -1,4 +1,3 @@
-
 #Tic-Tac-Toe Game Interface
 
 #Import Modules
@@ -15,6 +14,10 @@ class GameBoard:
 
         self.opponentToken = opponentToken
         self.opponentColor = opponentColor
+
+        self.ReservedSpots = []
+
+        self.PlayerTurn = True
 
         
         self.gameWindow = Tk()
@@ -58,41 +61,65 @@ class GameBoard:
 
         self.gameWindow.bind('<Button-1>', self.HandlePlayerSelection)
 
-    #Sets ownership of a particular region, updates board
+
+    def IsReserved(self, row, column):
+        if (row, column) not in self.ReservedSpots:
+            return False
+        else:
+            return True
+
+    #Sets ownership of a particular region, updates board with player token.
+    #TODO: Check to see if we are resevered, if so, output message to user. If not, place player token.
+
     def HandlePlayerSelection(self, event):
         x, y = event.x, event.y
 
-        if (x >= 10 and x <=110) and (y >=30 and y <=130):
+        if (x >= 10 and x <=110) and (y >=30 and y <=130) and not self.IsReserved(1,1):
             self.canvas.create_text(60, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-         
-        elif (x >= 110 and x <=210) and (y >= 30 and y <= 130):
+            self.ReservedSpots.append((1,1))
+     
+        elif (x >= 110 and x <=210) and (y >= 30 and y <= 130) and not self.IsReserved(1,2):
             self.canvas.create_text(160,80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+            self.ReservedSpots.append((1,2))
             
-        elif (x >= 210 and x <=310) and (y >= 30 and y <=130):
+        elif (x >= 210 and x <=310) and (y >= 30 and y <=130) and not self.IsReserved(1,3):
             self.canvas.create_text(260, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+            self.ReservedSpots.append((1,3))
 
-        elif (x >=10 and  x <=110) and (y >=130 and y <=230):
+        elif (x >=10 and  x <=110) and (y >=130 and y <=230) and not self.IsReserved(2,1):
             self.canvas.create_text(60, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-
-        elif (x >= 110 and x <=210) and (y >= 130 and y <= 230):
+            self.ReservedSpots.append((2,1))
+            
+        elif (x >= 110 and x <=210) and (y >= 130 and y <= 230) and not self.IsReserved(2,2):
             self.canvas.create_text(160, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-
-        elif (x >= 210 and x <=310) and (y >= 130 and y <= 230):
+            self.ReservedSpots.append((2,2))
+            
+        elif (x >= 210 and x <=310) and (y >= 130 and y <= 230) and not self.IsReserved(2,3):
             self.canvas.create_text(260,180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-
-        elif (x >= 10 and x <=110) and (y >=230 and y <= 330):
+            self.ReservedSpots.append((2,3))
+            
+        elif (x >= 10 and x <=110) and (y >=230 and y <= 330) and not self.IsReserved(3,1):
             self.canvas.create_text(60,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-
-        elif (x >=110 and x <=210) and (y >=230 and y <=330):
+            self.ReservedSpots.append((3,1))
+            
+        elif (x >=110 and x <=210) and (y >=230 and y <=330) and not self.IsReserved(3,2):
             self.canvas.create_text(160,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-
-        elif (x >= 210 and x <= 310) and (y >= 230 and y <=330):
+            self.ReservedSpots.append((3,2))
+            
+        elif (x >= 210 and x <= 310) and (y >= 230 and y <=330) and not self.IsReserved(3,3):
             self.canvas.create_text(260,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-   
+            self.ReservedSpots.append((3,3))
 
+        #else we are reserved, output to user.
+        else:
+            self.ClearPlayerMessage()
+            self.SetPlayerMessage("SPOT ALREADY TAKEN!\nSELECT AGAIN!")
+            
+        print(self.ReservedSpots)
     def UpdateBoard(self, row, column):
         if row == 1 and column == 1:
             self.canvas.create_text(60, 80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
+            self.ReservedSpots.append((1,1))
             
         elif row == 1 and column == 2:
              self.canvas.create_text(160,80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
@@ -122,7 +149,9 @@ class GameBoard:
     #Function that sets the message notification to the player.
     def SetPlayerMessage(self, message):
         self.userMessage.config(text=message)
-        
+
+    def GetPlayerTurn(self):
+        return self.PlayerTurn
 
     #Function that clears the message notification. 
     def ClearPlayerMessage(self):
@@ -146,16 +175,15 @@ def main():
     #Unit testing for Set and Clearing of Messages
     game_board.SetPlayerMessage("Player Color: "+game_board.playerColor+"\nYour opponent's color is: "+game_board.opponentColor)
     game_board.ClearPlayerMessage()
-    game_board.UpdateBoard(1,1)
-    game_board.UpdateBoard(1,2)
-    game_board.UpdateBoard(1,3)
-    game_board.UpdateBoard(2,1)
-    game_board.UpdateBoard(2,2)
-    game_board.UpdateBoard(2,3)
-    game_board.UpdateBoard(3,1)
-    game_board.UpdateBoard(3,2)
-    game_board.UpdateBoard(3,3)
+    #game_board.UpdateBoard(1,1)
 
-
-
+    print(game_board.PlayerTurn)
     game_board.Start()
+
+    
+
+
+
+
+
+    
