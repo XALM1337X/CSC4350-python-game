@@ -5,7 +5,7 @@ from tkinter import *
 
 class GameBoard:
 
-    #Define Constructor 
+    #Define Constructor
     def __init__(self, playerToken, playerColor, opponentToken, opponentColor):
 
         #X or O for the player (gameToken), color of player (playerColor), token of opponent, and color of opponent
@@ -19,7 +19,7 @@ class GameBoard:
 
         self.PlayerTurn = True
 
-        
+
         self.gameWindow = Tk()
 
         self.canvas_width = 320
@@ -77,11 +77,11 @@ class GameBoard:
         if (x >= 10 and x <=110) and (y >=30 and y <=130) and not self.IsReserved(1,1):
             self.canvas.create_text(60, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((1,1))
-     
+
         elif (x >= 110 and x <=210) and (y >= 30 and y <= 130) and not self.IsReserved(1,2):
             self.canvas.create_text(160,80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((1,2))
-            
+
         elif (x >= 210 and x <=310) and (y >= 30 and y <=130) and not self.IsReserved(1,3):
             self.canvas.create_text(260, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((1,3))
@@ -89,23 +89,23 @@ class GameBoard:
         elif (x >=10 and  x <=110) and (y >=130 and y <=230) and not self.IsReserved(2,1):
             self.canvas.create_text(60, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((2,1))
-            
+
         elif (x >= 110 and x <=210) and (y >= 130 and y <= 230) and not self.IsReserved(2,2):
             self.canvas.create_text(160, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((2,2))
-            
+
         elif (x >= 210 and x <=310) and (y >= 130 and y <= 230) and not self.IsReserved(2,3):
             self.canvas.create_text(260,180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((2,3))
-            
+
         elif (x >= 10 and x <=110) and (y >=230 and y <= 330) and not self.IsReserved(3,1):
             self.canvas.create_text(60,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((3,1))
-            
+
         elif (x >=110 and x <=210) and (y >=230 and y <=330) and not self.IsReserved(3,2):
             self.canvas.create_text(160,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((3,2))
-            
+
         elif (x >= 210 and x <= 310) and (y >= 230 and y <=330) and not self.IsReserved(3,3):
             self.canvas.create_text(260,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((3,3))
@@ -114,13 +114,13 @@ class GameBoard:
         else:
             self.ClearPlayerMessage()
             self.SetPlayerMessage("SPOT ALREADY TAKEN!\nSELECT AGAIN!")
-            
+
         print(self.ReservedSpots)
     def UpdateBoard(self, row, column):
         if row == 1 and column == 1:
             self.canvas.create_text(60, 80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((1,1))
-            
+
         elif row == 1 and column == 2:
              self.canvas.create_text(160,80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
 
@@ -153,9 +153,9 @@ class GameBoard:
     def GetPlayerTurn(self):
         return self.PlayerTurn
 
-    #Function that clears the message notification. 
+    #Function that clears the message notification.
     def ClearPlayerMessage(self):
-        self.userMessage.config(text="") 
+        self.userMessage.config(text="")
 
     #Delete Window upon user clicking 'QUIT'.
     def CloseWindow(self):
@@ -165,8 +165,8 @@ class GameBoard:
     def Start(self):
         self.gameWindow.mainloop()
 
-            
-        
+
+
 def main():
 
     game_board = GameBoard("X", "blue", "O", "orange")
@@ -180,10 +180,7 @@ def main():
     print(game_board.PlayerTurn)
     game_board.Start()
 
-    
 
 
-
-
-
-    
+if __name__ == "__main__":
+    main()
