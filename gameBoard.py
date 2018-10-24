@@ -2,12 +2,23 @@
 
 #Import Modules
 from tkinter import *
+import socket
+import threading
 
-class GameBoard:
+
+HOST = "127.0.0.1"
+PORT = 65531
+
+class GameBoard():
 
     #Define Constructor
     def __init__(self, playerToken, playerColor, opponentToken, opponentColor):
 
+  
+
+        self.ClientSocket= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.ClientSocket.connect((HOST, PORT))
+        
         #X or O for the player (gameToken), color of player (playerColor), token of opponent, and color of opponent
         self.playerToken = playerToken
         self.playerColor = playerColor
@@ -42,6 +53,7 @@ class GameBoard:
         #User in-game notifications text.
         self.userMessage = Label(self.canvas, text="",bg="black", fg=self.playerColor)
         self.userMessage.place(x=15,y=395)
+        
         #Create QUIT button for the user to click.
         self.quitButton = Button(self.canvas, text="QUIT", width=15, height=2, bg='grey' , command=self.CloseWindow)
         self.quitButton.place(x=205,y=460)
@@ -54,6 +66,8 @@ class GameBoard:
 
         self.createWidgets()
         self.canvas.pack()
+
+        self.Start()
 
     #Can use this function later to create multiple pieces, quit buttons, etc...
     def createWidgets(self):
@@ -74,9 +88,12 @@ class GameBoard:
     def HandlePlayerSelection(self, event):
         x, y = event.x, event.y
 
+  
         if (x >= 10 and x <=110) and (y >=30 and y <=130) and not self.IsReserved(1,1):
             self.canvas.create_text(60, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((1,1))
+            self.PlayGame(1, 1)
+            self.PlayerTurn = False
 
         elif (x >= 110 and x <=210) and (y >= 30 and y <= 130) and not self.IsReserved(1,2):
             self.canvas.create_text(160,80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
@@ -115,11 +132,14 @@ class GameBoard:
             self.ClearPlayerMessage()
             self.SetPlayerMessage("SPOT ALREADY TAKEN!\nSELECT AGAIN!")
 
-        print(self.ReservedSpots)
+
+
+    #Update the board with the opponents selection.        
     def UpdateBoard(self, row, column):
         if row == 1 and column == 1:
             self.canvas.create_text(60, 80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
             self.ReservedSpots.append((1,1))
+            
 
         elif row == 1 and column == 2:
              self.canvas.create_text(160,80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
@@ -161,25 +181,90 @@ class GameBoard:
     def CloseWindow(self):
         self.gameWindow.destroy()
 
-    #Function to start the client application.
+    #Function to start the client application and establish inital comms. 
     def Start(self):
-        self.gameWindow.mainloop()
+
+        data = self.ClientSocket.recv(1024).decode()
+        
+        #We are going first, set attributes
+        if data == "player_number: 1":
+            self.PlayerTurn = True
+            self.opponentTurn = False
+
+        #Otherwise, opponent is going first. 
+        elif data == "player_number: 2":
+            self.PlayerTurn = False
+            self.opponentTurn = True
+
+
+        #Set corresponding message based on player status
+        if self.PlayerTurn:
+
+            self.ClearPlayerMessage()
+            self.SetPlayerMessage("IT'S YOUR TURN")
+
+        elif self.opponentTurn:
+
+            self.ClearPlayerMessage()
+            self.SetPlayerMessage("OPPONENTS TURN")
+
+        
+        #self.gameWindow.mainloop()
+
+
+    
+    def PlayGame(self, row, column):
+
+        #First let's check for a win. Call winning line function and set output message to win. Regardless of player here
+
+
+        #Now, let's send the player selection out to the server.
+        outboundData = ""
+        
+        if self.PlayerTurn:
+
+            outboundData = str(row)+","+str(column)
+            
+            self.ClientSocket.send(outboundData.encode())
+
+        else:
+            self.ClearPlayerMessage()
+            self.SetPlayerMessage("OPPONENT'S TURN")
+        
+            
+            
+
+
+
+            
+
+
 
 
 
 def main():
 
+    
+    isFinish = False
     game_board = GameBoard("X", "blue", "O", "orange")
 
+    Process = threading.Thread(target=game_board.gameWindow.mainloop)
+    Process.start()
 
+    
     #Unit testing for Set and Clearing of Messages
-    game_board.SetPlayerMessage("Player Color: "+game_board.playerColor+"\nYour opponent's color is: "+game_board.opponentColor)
-    game_board.ClearPlayerMessage()
-    #game_board.UpdateBoard(1,1)
+    
 
-    print(game_board.PlayerTurn)
     game_board.Start()
+    game_board.SetPlayerMessage("Player Color: "+game_board.playerColor+"\nYour opponent's color is: "+game_board.opponentColor)
 
+
+
+
+    
+    
+ 
+    
 
 
 if __name__ == "__main__":
