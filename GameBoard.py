@@ -10,10 +10,12 @@ class GameBoard:
         #Initialize variables that our game will need about the client.
         self.playerToken = 'C'
         self.playerColor = "blue"
+        self.playerTurn = True
 
         #Initialize variables that our game will need about the opposing client.
         self.opponentToken = 'd'
         self.opponentColor = 'magenta'
+        #self.opponentTurn = False
 
         #Initialize winning line color.
         self.winningLine = "yellow"
@@ -204,18 +206,3 @@ class GameBoard:
     def Start(self):
         self.gameWindow.mainloop()
     
-#Define main function (for testing purposes only)
-##def main():
-##
-##    gameOne = GameBoard()
-##
-##
-##
-##    gameOne.DrawWinner("diagonal_right")
-##
-##
-##
-##
-##
-##if __name__ == "__main__":
-##    main()
