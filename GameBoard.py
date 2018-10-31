@@ -4,19 +4,18 @@ from tkinter import *
 class GameBoard:
 
     #Define Constructor for GameBoard class.
-    def __init__(self):
+    def __init__(self, token, color, opponentToken, opponentColor):
 
         self.gameWindow = Tk()
         #Initialize variables that our game will need about the client.
-        self.playerToken = 'C'
-        self.playerColor = "blue"
+        self.playerToken = token
+        self.playerColor = color
         self.playerTurn = True
 
         #Initialize variables that our game will need about the opposing client.
-        self.opponentToken = 'd'
-        self.opponentColor = 'magenta'
-        #self.opponentTurn = False
-
+        self.opponentToken = opponentToken
+        self.opponentColor = opponentColor
+        
         #Initialize winning line color.
         self.winningLine = "yellow"
         
@@ -70,15 +69,58 @@ class GameBoard:
 
     #Def IsReserved: Function to check and see if position on the gameboard is taken.
     def IsReserved(self, row, column):
+
         if (row, column) not in self.ReservedSpots:
             return False
         else:
+            self.ReservedSpots.append((0,0))
             return True
 
 
+    #Function that converts a click to a (row, column) tuple.
+    def convertClickToRowColumn(self, x, y):
 
+        row = 0
+        column = 0
+        
+        if (x >= 10 and x <=110) and (y >=30 and y <=130) and not self.IsReserved(1,1):
+            row = 1
+            column = 1
 
+        elif (x >= 110 and x <=210) and (y >= 30 and y <= 130) and not self.IsReserved(1,2):
+            row = 1
+            column = 2
+            
+        elif (x >= 210 and x <=310) and (y >= 30 and y <=130) and not self.IsReserved(1,3):
+            row = 1
+            column = 3
+            
+        elif (x >=10 and  x <=110) and (y >=130 and y <=230) and not self.IsReserved(2,1):
+            row = 2
+            column = 1
+            
+        elif (x >= 110 and x <=210) and (y >= 130 and y <= 230) and not self.IsReserved(2,2):
+            row = 2
+            column = 2
+            
+        elif (x >= 210 and x <=310) and (y >= 130 and y <= 230) and not self.IsReserved(2,3):
+            row = 2
+            column = 3
+            
+        elif (x >= 10 and x <=110) and (y >=230 and y <= 330) and not self.IsReserved(3,1):
+            row = 3
+            column = 1
+            
+        elif (x >=110 and x <=210) and (y >=230 and y <=330) and not self.IsReserved(3,2):
+            row = 3
+            column = 2
+            
+        elif (x >= 210 and x <= 310) and (y >= 230 and y <=330) and not self.IsReserved(3,3):
+            row = 3
+            column = 3
 
+        return (row, column)
+            
     #Def HandlePlayerSelection: Function that places the player's corresponding X or O in the
     #Corresponding clicked area.
     def HandlePlayerSelection(self, event):
@@ -86,50 +128,59 @@ class GameBoard:
         #Get x and y coordinates of the mouse. 
         x, y = event.x, event.y
 
+        #Get (row, column) tuple from click.
+        row_column = self.convertClickToRowColumn(x, y)
+        row = row_column[0]
+        column = row_column[1]
+
         #Clear out the message if there is one. 
         self.ClearPlayerMessage()
-
+        
         if self.playerTurn:
-            if (x >= 10 and x <=110) and (y >=30 and y <=130) and not self.IsReserved(1,1):
-                self.canvas.create_text(60, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((1,1))
 
-            elif (x >= 110 and x <=210) and (y >= 30 and y <= 130) and not self.IsReserved(1,2):
-                self.canvas.create_text(160,80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((1,2))
-
-            elif (x >= 210 and x <=310) and (y >= 30 and y <=130) and not self.IsReserved(1,3):
-                self.canvas.create_text(260, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((1,3))
-
-            elif (x >=10 and  x <=110) and (y >=130 and y <=230) and not self.IsReserved(2,1):
-                self.canvas.create_text(60, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((2,1))
-
-            elif (x >= 110 and x <=210) and (y >= 130 and y <= 230) and not self.IsReserved(2,2):
-                self.canvas.create_text(160, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((2,2))
-
-            elif (x >= 210 and x <=310) and (y >= 130 and y <= 230) and not self.IsReserved(2,3):
-                self.canvas.create_text(260,180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((2,3))
-
-            elif (x >= 10 and x <=110) and (y >=230 and y <= 330) and not self.IsReserved(3,1):
-                self.canvas.create_text(60,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((3,1))
-
-            elif (x >=110 and x <=210) and (y >=230 and y <=330) and not self.IsReserved(3,2):
-                self.canvas.create_text(160,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((3,2))
-
-            elif (x >= 210 and x <= 310) and (y >= 230 and y <=330) and not self.IsReserved(3,3):
-                self.canvas.create_text(260,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-                self.ReservedSpots.append((3,3))
-            
-
-            else:
+            if self.IsReserved(row, column):
                 self.ClearPlayerMessage()
                 self.SetPlayerMessage("SPOT ALREADY TAKEN!\nSELECT AGAIN!")
+
+            else:
+                
+                if row == 1 and column == 1 and not self.IsReserved(row, column):
+                    self.canvas.create_text(60, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                elif row == 1 and column == 2 and not self.IsReserved(row, column):
+                    self.canvas.create_text(160,80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                elif row == 1 and column == 3 and not self.IsReserved(row, column):
+                    self.canvas.create_text(260, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                elif row == 2 and column == 1 and not self.IsReserved(row, column):
+                    self.canvas.create_text(60, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                elif row == 2 and column == 2 and not self.IsReserved(row, column):
+                    self.canvas.create_text(160, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                elif row == 2 and column == 3 and not self.IsReserved(row, column):
+                    self.canvas.create_text(260,180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                elif row == 3 and column == 1 and not self.IsReserved(row, column):
+                    self.canvas.create_text(60,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                elif row == 3 and column == 2 and not self.IsReserved(row, column):
+                    self.canvas.create_text(160,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                elif row == 3 and column == 3 and not self.IsReserved(row, column):
+                    self.canvas.create_text(260,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+                    self.ReservedSpots.append(row_column)
+
+                
 
 
     #Def UpdateBoard: Function places opponent token on game board. Takes in a row and column
