@@ -16,16 +16,18 @@ class ThreadedServer(object):
 	def listenToClient(self, client, address):
 		size = 4096
 		while True:
-                    data = client.recv(size)
-                    strdata = data.decode('utf-8')
-                    if data:
-                        try:
-                            client.send(strdata.encode('utf-8'))
-                            client.close()
-                        except:
-                            client.send("HTTP/1.1 404 Not OK\n\n").encode('utf-8')
-                            client.close()
-                    else:
-                        raise error('Client disconnected')
-                        client.close()
-                    break
+			data = client.recv(size)
+			strdata = data.decode()
+			hostname,hostport = client.getpeername()
+			strdata = strdata + hostname
+			if data:
+				try:
+					client.send(strdata.encode())
+					client.close()
+				except:
+					client.send("HTTP/1.1 404 Not OK\n\n").encode()
+					client.close()
+			else:
+				raise error('Client disconnected')
+				client.close()
+			break
