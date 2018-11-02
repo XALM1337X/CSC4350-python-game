@@ -1,5 +1,6 @@
 from socket import *
 import threading
+from state import StateOfGame
 class ThreadedServer(object):
 	def __init__(self, host, port):
 		self.host = host
@@ -12,14 +13,15 @@ class ThreadedServer(object):
 		while True:
 			client, address = self.sock.accept()
 			client.settimeout(10)
+			hostname,hostport = client.getpeername()
+			StateOfGame.playerIPs.append(hostname)
 			threading.Thread(target = self.listenToClient,args = (client,address)).start()
 	def listenToClient(self, client, address):
 		size = 4096
 		while True:
 			data = client.recv(size)
 			strdata = data.decode()
-			hostname,hostport = client.getpeername()
-			strdata = strdata + hostname
+			strdata = strdata + hostname + StateOfGame.playerIPs
 			if data:
 				try:
 					client.send(strdata.encode())
