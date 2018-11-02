@@ -1,4 +1,5 @@
 
+
 from tkinter import *
 
 class GameBoard:
@@ -11,6 +12,7 @@ class GameBoard:
         self.playerToken = token
         self.playerColor = color
         self.playerTurn = True
+        self.isWinner = False
 
         #Initialize variables that our game will need about the opposing client.
         self.opponentToken = opponentToken
