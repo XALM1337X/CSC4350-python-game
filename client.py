@@ -35,9 +35,35 @@ def playGame():
 	
 	incomingData = read_packet()
 	
-	
-	
-
+	while "winner" is not in incomingData:
+		
+		if "opponent_turn" is in incomingData:
+			Game.ClearPlayerMessage()
+			opponentMove = incomingData.split(":")[1].split(",")
+			Game.gameWindow.UpdateBoard(int(opponentMove[0]), int(opponentMove[1]))
+			Game.playerTurn = True
+            
+         if Game.playerTurn:
+			Game.ClearPlayerMessage()
+			Game.SetPlayerMessage("IT'S YOUR TURN!")
+			
+			while Game.playerRow != 0 and Game.playerColumn != 0:
+                outgoing = str(Game.playerRow)+","+str(Game.playerColumn)
+				ClientSocket.Send(outgoing.encode())
+				Game.SetPlayerRowColumn()
+				
+	if "1" is in incomingData:
+        typeOfWin = incomingData.split(":")[1].split(",")[1]
+        Game.ClearPlayerMessage()
+        Game.SetPlayerMessage("YOU WIN!")
+        DrawWinner(typeOfWin)
+    elif "0" is in incomingData:
+        typeOfWin = incomingData.split(":")[1].split(",")[1]
+        Game.ClearPlayerMessage()
+        Game.SetPlayerMessage("YOU LOSE!")
+        DrawWinner(typeOfWin)
+        
+        
 #def init_session: Function that intializes socket connection to server.
 def init_session():
 

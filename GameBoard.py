@@ -13,6 +13,8 @@ class GameBoard:
         self.playerColor = color
         self.playerTurn = True
         self.isWinner = False
+        self.playerRow=0
+        self.playerColumn=0
 
         #Initialize variables that our game will need about the opposing client.
         self.opponentToken = opponentToken
@@ -123,6 +125,11 @@ class GameBoard:
 
         return (row, column)
 
+
+	Def SetPlayerRowColumn(self):
+		self.playerRow = 0
+		self.playerColumn = 0
+		
     #Def HandlePlayerSelection: Function that places the player's corresponding X or O in the
     #Corresponding clicked area.
     def HandlePlayerSelection(self, event):
@@ -134,6 +141,9 @@ class GameBoard:
         row_column = self.convertClickToRowColumn(x, y)
         row = row_column[0]
         column = row_column[1]
+        
+        self.playerRow=row
+        self.playerColumn=column
 
         #Clear out the message if there is one.
         self.ClearPlayerMessage()
