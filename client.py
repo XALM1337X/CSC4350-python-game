@@ -32,15 +32,9 @@ def read_packet():
 
 #Function will sequentially play the game.
 def playGame():
-    
+    print("")
     #Clear out the current player message.
     #Game.ClearPlayerMessage()
-
-    Game.ClearPlayerMessage()
-    
-    
-    print("TEST")
-
 
 
 #def init_session: Function that intializes socket connection to server.
@@ -61,4 +55,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
