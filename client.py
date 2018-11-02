@@ -9,7 +9,7 @@ Game = GameBoard("X", "magenta", "O", "orange")
 
 #Define constants to connect to server.
 HOST = "127.0.0.1"
-PORT = 65531
+PORT = 61001
 
 #Define the client socket.
 ClientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -21,7 +21,7 @@ def read_packet():
     byte = ""
 
     #Iterate byte by byte to determine if we have reached the delimiter.
-    while byte != "*":
+    while byte != "?":
         receivedData = receivedData + byte
         byte = ClientSocket.recv(1).decode()
 

@@ -260,5 +260,5 @@ class GameBoard:
 
        
     def Start(self):
-        self.gameWindow.update()
+        self.gameWindow.mainloop()
     
