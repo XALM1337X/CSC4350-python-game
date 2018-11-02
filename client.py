@@ -22,7 +22,7 @@ def read_packet():
     byte = ""
 
     #Iterate byte by byte to determine if we have reached the delimiter.
-    while byte != "*":
+    while byte != "?":
         receivedData = receivedData + byte
         byte = ClientSocket.recv(1).decode()
 
