@@ -4,17 +4,18 @@ from GameBoard import *
 import socket
 
 
-#Define our game. These values need to be read in from the byte stream. 
+#Define our game. These values need to be read in from the byte stream.
 Game = GameBoard("X", "magenta", "O", "orange")
 
 #Define constants to connect to server.
+#HOST = "143.60.76.32"
 HOST = "127.0.0.1"
-PORT = 65531
+PORT = 61001
 
 #Define the client socket.
 ClientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-#def read_packet: Function reads in one packet sent from the server. 
+#def read_packet: Function reads in one packet sent from the server.
 def read_packet():
 
     receivedData = ""
@@ -29,7 +30,7 @@ def read_packet():
     return receivedData
 
 
-#Function will sequentially play the game.        
+#Function will sequentially play the game.
 def playGame():
 
     #Clear out the current player message.
@@ -40,8 +41,8 @@ def playGame():
 def init_session():
     ClientSocket.connect((HOST, PORT))
     Game.SetPlayerMessage("CONNECTED!")
-    
-    
+
+
 
 def main():
 
@@ -49,8 +50,8 @@ def main():
     Game.gameWindow.after(0, init_session)
     Game.gameWindow.after(100, playGame)
 
-	#Start the game. 
+	#Start the game.
     Game.Start()
-    
+
 if __name__ == "__main__":
     main()
