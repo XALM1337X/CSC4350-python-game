@@ -34,6 +34,9 @@ def playGame():
 
     #Clear out the current player message.
     Game.ClearPlayerMessage()
+    
+    
+    print("TEST")
 
 
 #def init_session: Function that intializes socket connection to server.
@@ -54,3 +57,4 @@ def main():
     
 if __name__ == "__main__":
     main()
+
