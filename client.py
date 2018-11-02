@@ -8,7 +8,7 @@ import socket
 Game = GameBoard("X", "orange", "O", "green")
 
 #Define constants to connect to server.
-HOST = "127.0.0.1"
+HOST = "143.60.76.32"
 PORT = 61001
 
 #Define the client socket.
@@ -51,6 +51,8 @@ def playGame():
                 outgoing = str(Game.playerRow)+","+str(Game.playerColumn)
 				ClientSocket.Send(outgoing.encode())
 				Game.SetPlayerRowColumn()
+				
+		incomingData = read_packet()
 				
 	if "1" is in incomingData:
         typeOfWin = incomingData.split(":")[1].split(",")[1]
