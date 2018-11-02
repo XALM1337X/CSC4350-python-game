@@ -195,28 +195,35 @@ class GameBoard:
 
         elif row == 1 and column == 2:
              self.canvas.create_text(160,80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
+             self.ReservedSpots.append((1,2))
 
         elif row == 1 and column == 3:
             self.canvas.create_text(260, 80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((1,3))
+			
         elif row == 2 and column == 1:
             self.canvas.create_text(60, 180, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((2,1))
+			
         elif row == 2 and column == 2:
             self.canvas.create_text(160, 180, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((2,2))
+			
         elif row == 2 and column == 3:
             self.canvas.create_text(260,180, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((2,3))
+			
         elif row == 3 and column == 1:
             self.canvas.create_text(60,280, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((3,1))
+			
         elif row == 3 and column == 2:
             self.canvas.create_text(160,280, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((3,2))
+			
         elif row == 3 and column == 3:
             self.canvas.create_text(260,280, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((3,3))
 
     #Def DrawWinner: Function that draws winning line when a winner is declared.
     def DrawWinner(self, message):

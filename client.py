@@ -5,15 +5,15 @@ import socket
 
 
 #Define our game. These values need to be read in from the byte stream.
-Game = GameBoard("X", "magenta", "O", "orange")
+Game = GameBoard("X", "orange", "O", "green")
 
 #Define constants to connect to server.
-#HOST = "143.60.76.32"
 HOST = "127.0.0.1"
 PORT = 61001
 
 #Define the client socket.
 ClientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ClientSocket.connect((HOST, PORT))
 
 #def read_packet: Function reads in one packet sent from the server.
 def read_packet():
@@ -32,14 +32,22 @@ def read_packet():
 
 #Function will sequentially play the game.
 def playGame():
-    print("")
-    #Clear out the current player message.
-    #Game.ClearPlayerMessage()
-
+	
+	incomingData = read_packet()
+	
+	
+	
 
 #def init_session: Function that intializes socket connection to server.
 def init_session():
-    ClientSocket.connect((HOST, PORT))
+
+	#Init game variables. 
+    Game.playerToken = read_packet()
+    Game.playerColor = read_packet()
+    Game.opponentToken = read_packet()
+    Game.opponentColor = read_packet()
+	
+	#Notify the player that they are connected to the game. 
     Game.SetPlayerMessage("CONNECTED!")
 
 
