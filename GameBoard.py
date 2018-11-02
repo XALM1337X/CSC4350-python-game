@@ -260,9 +260,4 @@ class GameBoard:
 
 
     def Start(self):
-<<<<<<< HEAD
-        self.gameWindow.update()
-=======
         self.gameWindow.mainloop()
-    
->>>>>>> 795c23c42e1c3d9be7b4f8970dadb3071d8f41b8
