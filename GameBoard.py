@@ -11,7 +11,7 @@ class GameBoard:
         #Initialize variables that our game will need about the client.
         self.playerToken = token
         self.playerColor = color
-        self.playerTurn = True
+        self.playerTurn = False
         self.isWinner = False
         self.playerRow=0
         self.playerColumn=0
@@ -57,7 +57,7 @@ class GameBoard:
         self.playerInformationText.place(x=40,y=370)
 
         #User in-game notifications text.
-        self.userMessage = Label(self.canvas, text="",bg="black", fg=self.playerColor)
+        self.userMessage = Label(self.canvas, text="",bg="black", fg="grey")
         self.userMessage.place(x=15,y=395)
 
         #Bind the left click of the mouse to the Handler function for a player selection.
@@ -126,9 +126,9 @@ class GameBoard:
         return (row, column)
 
 
-	Def SetPlayerRowColumn(self):
-		self.playerRow = 0
-		self.playerColumn = 0
+    def SetPlayerRowColumn(self):
+        self.playerRow = 0
+        self.playerColumn = 0
 		
     #Def HandlePlayerSelection: Function that places the player's corresponding X or O in the
     #Corresponding clicked area.
