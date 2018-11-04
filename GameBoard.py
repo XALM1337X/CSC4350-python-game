@@ -1,6 +1,5 @@
-
-
 from tkinter import *
+import socket
 
 class GameBoard:
 
@@ -11,9 +10,11 @@ class GameBoard:
         #Initialize variables that our game will need about the client.
         self.playerToken = token
         self.playerColor = color
-        self.playerTurn = True
+        self.playerTurn = False
         self.isWinner = False
-
+        self.playerRow=0
+        self.playerColumn=0
+        
         #Initialize variables that our game will need about the opposing client.
         self.opponentToken = opponentToken
         self.opponentColor = opponentColor
@@ -55,7 +56,7 @@ class GameBoard:
         self.playerInformationText.place(x=40,y=370)
 
         #User in-game notifications text.
-        self.userMessage = Label(self.canvas, text="",bg="black", fg=self.playerColor)
+        self.userMessage = Label(self.canvas, text="",bg="black", fg="grey")
         self.userMessage.place(x=15,y=395)
 
         #Bind the left click of the mouse to the Handler function for a player selection.
@@ -123,6 +124,18 @@ class GameBoard:
 
         return (row, column)
 
+
+    def SetPlayerRowColumn(self):
+        self.playerRow = 0
+        self.playerColumn = 0
+
+    def GetPlayerRow(self):
+        return self.playerRow
+
+    def GetPlayerColumn(self):
+        return self.playerColumn
+
+		
     #Def HandlePlayerSelection: Function that places the player's corresponding X or O in the
     #Corresponding clicked area.
     def HandlePlayerSelection(self, event):
@@ -134,7 +147,10 @@ class GameBoard:
         row_column = self.convertClickToRowColumn(x, y)
         row = row_column[0]
         column = row_column[1]
-
+        
+        self.playerRow=row
+        self.playerColumn=column
+        self.pp = True
         #Clear out the message if there is one.
         self.ClearPlayerMessage()
 
@@ -195,28 +211,35 @@ class GameBoard:
 
         elif row == 1 and column == 2:
              self.canvas.create_text(160,80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
+             self.ReservedSpots.append((1,2))
 
         elif row == 1 and column == 3:
             self.canvas.create_text(260, 80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((1,3))
+			
         elif row == 2 and column == 1:
             self.canvas.create_text(60, 180, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((2,1))
+			
         elif row == 2 and column == 2:
             self.canvas.create_text(160, 180, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((2,2))
+			
         elif row == 2 and column == 3:
             self.canvas.create_text(260,180, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((2,3))
+			
         elif row == 3 and column == 1:
             self.canvas.create_text(60,280, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((3,1))
+			
         elif row == 3 and column == 2:
             self.canvas.create_text(160,280, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((3,2))
+			
         elif row == 3 and column == 3:
             self.canvas.create_text(260,280, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
-
+            self.ReservedSpots.append((3,3))
 
     #Def DrawWinner: Function that draws winning line when a winner is declared.
     def DrawWinner(self, message):
@@ -261,5 +284,7 @@ class GameBoard:
         self.userMessage.config(text="")
 
 
-    def Start(self):
-        self.gameWindow.mainloop()
+    def Update(self):
+        self.gameWindow.update()
+
+
