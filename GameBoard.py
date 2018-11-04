@@ -1,4 +1,5 @@
 from tkinter import *
+from Global import *
 
 class GameBoard:
 
@@ -13,7 +14,7 @@ class GameBoard:
 		self.isWinner = False
 		self.playerRow=0
 		self.playerColumn=0
-
+		self.GamePipe= None
 		#Initialize variables that our game will need about the opposing client.
 		self.opponentToken = opponentToken
 		self.opponentColor = opponentColor
@@ -132,64 +133,63 @@ class GameBoard:
 	#Def HandlePlayerSelection: Function that places the player's corresponding X or O in the
 	#Corresponding clicked area.
 	def HandlePlayerSelection(self, event):
-
-		#Get x and y coordinates of the mouse.
-		x, y = event.x, event.y
-
-		#Get (row, column) tuple from click.
-		row_column = self.convertClickToRowColumn(x, y)
-		row = row_column[0]
-		column = row_column[1]
-
-		self.playerRow=row
-		self.playerColumn=column
-
-		#Clear out the message if there is one.
-		self.ClearPlayerMessage()
-
-		if self.playerTurn:
-
-			if self.IsReserved(row, column):
+		GlobalClient.ClientSocket.send("turncheck:,".encode())
+		incomingData = self.read_packet()
+		if "your_turn" in incomingData:
+			#Get x and y coordinates of the mouse.
+			x, y = event.x, event.y
+			#Get (row, column) tuple from click.
+			row_column = self.convertClickToRowColumn(x, y)
+			GlobalClient.ClientSocket.send("poscheck:?".encode())
+			incomingData = self.read_packet()
+			data = incomingData.split(":")
+			if "spot_taken" in data:
+				print("Spot is taken.")
+			elif "spot_open" in data:
+				row = row_column[0]
+				column = row_column[1]
+				#Clear out the message if there is one.
 				self.ClearPlayerMessage()
-				self.SetPlayerMessage("SPOT ALREADY TAKEN!\nSELECT AGAIN!")
+				if self.IsReserved(row, column):
+					self.ClearPlayerMessage()
+					self.SetPlayerMessage("SPOT ALREADY TAKEN!\nSELECT AGAIN!")
+				else:
+					if row == 1 and column == 1 and not self.IsReserved(row, column):
+						self.canvas.create_text(60, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
 
-			else:
+					elif row == 1 and column == 2 and not self.IsReserved(row, column):
+						self.canvas.create_text(160,80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
 
-				if row == 1 and column == 1 and not self.IsReserved(row, column):
-					self.canvas.create_text(60, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
+					elif row == 1 and column == 3 and not self.IsReserved(row, column):
+						self.canvas.create_text(260, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
 
-				elif row == 1 and column == 2 and not self.IsReserved(row, column):
-					self.canvas.create_text(160,80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
+					elif row == 2 and column == 1 and not self.IsReserved(row, column):
+						self.canvas.create_text(60, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
 
-				elif row == 1 and column == 3 and not self.IsReserved(row, column):
-					self.canvas.create_text(260, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
+					elif row == 2 and column == 2 and not self.IsReserved(row, column):
+						self.canvas.create_text(160, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
 
-				elif row == 2 and column == 1 and not self.IsReserved(row, column):
-					self.canvas.create_text(60, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
+					elif row == 2 and column == 3 and not self.IsReserved(row, column):
+						self.canvas.create_text(260,180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
 
-				elif row == 2 and column == 2 and not self.IsReserved(row, column):
-					self.canvas.create_text(160, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
+					elif row == 3 and column == 1 and not self.IsReserved(row, column):
+						self.canvas.create_text(60,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
 
-				elif row == 2 and column == 3 and not self.IsReserved(row, column):
-					self.canvas.create_text(260,180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
+					elif row == 3 and column == 2 and not self.IsReserved(row, column):
+						self.canvas.create_text(160,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
 
-				elif row == 3 and column == 1 and not self.IsReserved(row, column):
-					self.canvas.create_text(60,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 3 and column == 2 and not self.IsReserved(row, column):
-					self.canvas.create_text(160,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 3 and column == 3 and not self.IsReserved(row, column):
-					self.canvas.create_text(260,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
+					elif row == 3 and column == 3 and not self.IsReserved(row, column):
+						self.canvas.create_text(260,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
+						self.ReservedSpots.append(row_column)
+					GlobalClient.ClientSocket.send(("end_turn:"+str(row_column[0])+","+str(row_column[1])).encode())
 
 
 
@@ -197,6 +197,7 @@ class GameBoard:
     #Def UpdateBoard: Function places opponent token on game board. Takes in a row and column
 
 	def UpdateBoard(self, row, column):
+
 		if row == 1 and column == 1:
 			self.canvas.create_text(60, 80, text=self.opponentToken, fill=self.opponentColor, font='Helevetica, 25 bold')
 			self.ReservedSpots.append((1,1))
@@ -277,5 +278,26 @@ class GameBoard:
 		self.userMessage.config(text="")
 
 
+	def read_packet(self):  #  NEITHER OF THESE READ_PACKETS WORK FOR SOME REASON. THIS STUFF ALMOST WORKS.
+		receivedData = ""
+		byte = ""
+		#Iterate byte by byte to determine if we have reached the delimiter.
+		while byte != "?":
+				receivedData = receivedData + byte
+				byte = GlobalClient.ClientSocket.recv(1).decode()
+
+			#return our data from server.
+		return receivedData
+
 	def Start(self):
+		#while(True):
+		#	self.gameWindow.update_idletasks()
+		#	self.gameWindow.update()
+		#	p1 = Process(target=self.UpdateRowColumnRec)
+		#	data = self.GamePipe.recv().split(",")
+		#	self.playerRow = data[0]
+		#	self.playerColumn = data[1]
+		#	p1.join()
+		#	if self.playerRow != 0 and self.playerColumn != 0:
+		#		print(str(self.playerRow)+" "+str(self.playerColumn))
 		self.gameWindow.mainloop()
