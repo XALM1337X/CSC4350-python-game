@@ -1,6 +1,14 @@
 class StateOfGame():
-    def __init__(self):
-        self.player1Connected = False
-        self.player2Connected = False
-        self.player1Turn = False
-        self.playerIPs = []
+	def __init__(self):
+		self.playerTurn = ""
+		self.players = []
+		self.LastPlayerMove =""
+		self.reservedSpots = []
+
+class Player(object):
+	def __init__(self, Ip, Port, Soc):
+		self.playerIp = Ip
+		self.playerPortNum = Port
+		self.playerIcon = ""
+		self.playerColor = ""
+		self.playerSocket = Soc

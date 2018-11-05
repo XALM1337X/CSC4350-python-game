@@ -75,7 +75,6 @@ class GameBoard:
 		if (row, column) not in self.ReservedSpots:
 			return False
 		else:
-			self.ReservedSpots.append((0,0))
 			return True
 
 
@@ -277,5 +276,5 @@ class GameBoard:
 		self.userMessage.config(text="")
 
 
-	def Start(self):
-		self.gameWindow.mainloop()
+	def Update(self):
+		self.gameWindow.update()

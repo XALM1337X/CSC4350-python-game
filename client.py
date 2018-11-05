@@ -2,71 +2,75 @@
 #Module imports required.
 from GameBoard import *
 import socket
+import time
+from multiprocessing import Process
 
 
 #Define our game. These values need to be read in from the byte stream.
 Game = GameBoard("X", "orange", "O", "green")
 
 #Define constants to connect to server.
-HOST = "127.0.0.1"#"143.60.76.32"
+HOST = "10.0.0.144"#"143.60.76.32"
 PORT = 61001
 
 #Define the client socket.
 ClientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ClientSocket.connect((HOST, PORT))
-
+ClientSocket.setblocking(0)
 #def read_packet: Function reads in one packet sent from the server.
-def read_packet():
-    while(1):
-        receivedData = ClientSocket.recv(1024).decode()
-        if not receivedData:break
-        return receivedData
-    #return our data from server.
 
-#def read_packet():    NEITHER OF THESE READ_PACKETS WORK FOR SOME REASON. THIS STUFF ALMOST WORKS.
-#
-#    receivedData = ""
-#    byte = ""
-#
-#    #Iterate byte by byte to determine if we have reached the delimiter.
-#    while byte != "?":
-#        receivedData = receivedData + byte
-#        byte = ClientSocket.recv(1).decode()
-#
-#    #return our data from server.
-#    return receivedData
+def read_packet():
+	receivedData = ""
+	byte = ""
+	#Iterate byte by byte to determine if we have reached the delimiter.
+	while byte != "?":
+		receivedData = receivedData + byte
+		try:
+			byte = ClientSocket.recv(1).decode()
+		except socket.error:
+			return ""
+	return receivedData
 #
 #
 #Function will sequentially play the game.
 def playGame():
-
+	ClientSocket.send("turncheck".encode())
 	incomingData = read_packet()
-
-	while "winner" is not incomingData:
-
-		if "opponent_turn" is incomingData:
-			Game.ClearPlayerMessage()
-			opponentMove = incomingData.split(":")[1].split(",")
-			Game.gameWindow.UpdateBoard(int(opponentMove[0]), int(opponentMove[1]))
-			Game.playerTurn = True
-
-			if Game.playerTurn:
-				Game.ClearPlayerMessage()
-				Game.SetPlayerMessage("IT'S YOUR TURN!")
-
-			while Game.playerRow != 0 and Game.playerColumn != 0:
-				outgoing = str(Game.playerRow)+","+str(Game.playerColumn)
-				ClientSocket.Send(outgoing.encode())
-				Game.SetPlayerRowColumn()
-
+	Game.Update()
+	while "winner" not in incomingData:
 		incomingData = read_packet()
+		Game.Update()
+		if "your_turn" in incomingData:
+			print("Its your turn.")
+			Game.SetPlayerMessage("IT'S YOUR TURN!")
+			#Client.Socket.send("poscheck")
+			if Game.playerRow != 0 and Game.playerColumn != 0:
+				outgoing = "poscheck:"+str(Game.playerRow)+","+str(Game.playerColumn)
+				ClientSocket.send(outgoing.encode())
+				Game.playerRow =0
+				Game.playerColumn =0
 
-	if "1" is incomingData:
+		if "not_turn" in incomingData:
+			print("its not my turn")
+		if "spot_taken" in incomingData:
+			Game.SetPlayerMessage("This spot is taken! Try again.")
+
+		if "spot_open" in incomingData:
+			Game.reservedSpots.append(Game.playerRow,Game.playerColumn)
+			ClientSocket.send(("end_turn:"+str(Game.playerRow)+","+str(Game.playerColumn)).encode())
+
+
+
+		ClientSocket.send("turncheck".encode())
+		incomingData = read_packet()
+		Game.Update()
+		time.sleep(.5)
+	if "1" in incomingData:
 		typeOfWin = incomingData.split(":")[1].split(",")[1]
 		Game.ClearPlayerMessage()
 		Game.SetPlayerMessage("YOU WIN!")
 		DrawWinner(typeOfWin)
-	elif "0" is incomingData:
+	elif "0" in incomingData:
 		typeOfWin = incomingData.split(":")[1].split(",")[1]
 		Game.ClearPlayerMessage()
 		Game.SetPlayerMessage("YOU LOSE!")
@@ -83,6 +87,10 @@ def init_session():
 	Game.playerColor = read_packet().split(":")[0]
 	Game.opponentToken = read_packet().split(":")[0]
 	Game.opponentColor = read_packet().split(":")[0]
+	print(Game.playerToken)
+	print(Game.playerColor)
+	print(Game.opponentToken)
+	print(Game.opponentColor)
 
 	#Notify the player that they are connected to the game.
 	Game.SetPlayerMessage("CONNECTED!")
@@ -91,12 +99,10 @@ def init_session():
 
 def main():
 
-
-    Game.gameWindow.after(0, init_session)
-    Game.gameWindow.after(100, playGame)
-
-	#Start the game.
-    Game.Start()
+	Game.gameWindow.after(0, init_session)
+	p = Process(target=playGame)
+	p.start()
+	p.join()
 
 if __name__ == "__main__":
-    main()
+	main()
