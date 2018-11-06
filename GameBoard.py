@@ -9,7 +9,7 @@ class GameBoard:
 		#Initialize variables that our game will need about the client.
 		self.playerToken = token
 		self.playerColor = color
-		self.playerTurn = True
+		self.playerTurn = False
 		self.isWinner = False
 		self.playerRow=0
 		self.playerColumn=0
@@ -22,7 +22,7 @@ class GameBoard:
 		self.winningLine = "yellow"
 
 		#List for spots that are already taken in a game.
-		self.ReservedSpots = []
+		self.ReservedSpots = ["0,0"]
 
 		#Create a canvas with a set width and height.
 		self.canvasWidth = 320
@@ -48,6 +48,44 @@ class GameBoard:
 		#Create QUIT button for the user to click.
 		self.quitButton = Button(self.canvas, text="QUIT", width=15, height=2, bg='grey' , command=self.CloseWindow)
 		self.quitButton.place(x=205,y=460)
+		#create labels for player position text.
+		"""
+		60, 80  [1,1]
+		160, 80  [1,2]
+		260, 80  [1,3]
+		60, 180  [2,1]
+		160, 180 [2,2]
+		260, 180 [2-3]
+		60, 280  [3-1]
+		160, 280 [3-2]
+		260, 280 [3-3]
+		"""
+		self.board1_1 = Label(self.canvas, text="",fg="black")
+		self.board1_1.place(x=60,y=80)
+
+		self.board1_2 = Label(self.canvas, text="",fg="black")
+		self.board1_2.place(x=160,y=80)
+
+		self.board1_3 = Label(self.canvas, text="",fg="black")
+		self.board1_3.place(x=260, y=80)
+
+		self.board2_1 = Label(self.canvas, text="",fg="black")
+		self.board2_1.place(x=60, y=180)
+
+		self.board2_2 = Label(self.canvas, text="",fg="black")
+		self.board2_2.place(x=160, y=180)
+
+		self.board2_3 = Label(self.canvas, text="",fg="black")
+		self.board2_3.place(x=260, y=180)
+
+		self.board3_1 = Label(self.canvas, text="",fg="black")
+		self.board3_1.place(x=60, y=280)
+
+		self.board3_2 = Label(self.canvas, text="",fg="black")
+		self.board3_2.place(x=160, y=280)
+
+		self.board3_3 = Label(self.canvas, text="",fg="black")
+		self.board3_3.place(x=260,y=280)
 
 		#Player Information Box
 		self.canvas.create_rectangle(10,360,200,500, fill="black", outline="red", width=3)
@@ -70,12 +108,6 @@ class GameBoard:
 
 
 	#Def IsReserved: Function to check and see if position on the gameboard is taken.
-	def IsReserved(self, row, column):
-
-		if (row, column) not in self.ReservedSpots:
-			return False
-		else:
-			return True
 
 
 	#Function that converts a click to a (row, column) tuple.
@@ -84,39 +116,39 @@ class GameBoard:
 		row = 0
 		column = 0
 
-		if (x >= 10 and x <=110) and (y >=30 and y <=130) and not self.IsReserved(1,1):
+		if (x >= 10 and x <=110) and (y >=30 and y <=130):
 			row = 1
 			column = 1
 
-		elif (x >= 110 and x <=210) and (y >= 30 and y <= 130) and not self.IsReserved(1,2):
+		elif (x >= 110 and x <=210) and (y >= 30 and y <= 130):
 			row = 1
 			column = 2
 
-		elif (x >= 210 and x <=310) and (y >= 30 and y <=130) and not self.IsReserved(1,3):
+		elif (x >= 210 and x <=310) and (y >= 30 and y <=130):
 			row = 1
 			column = 3
 
-		elif (x >=10 and  x <=110) and (y >=130 and y <=230) and not self.IsReserved(2,1):
+		elif (x >=10 and  x <=110) and (y >=130 and y <=230):
 			row = 2
 			column = 1
 
-		elif (x >= 110 and x <=210) and (y >= 130 and y <= 230) and not self.IsReserved(2,2):
+		elif (x >= 110 and x <=210) and (y >= 130 and y <= 230):
 			row = 2
 			column = 2
 
-		elif (x >= 210 and x <=310) and (y >= 130 and y <= 230) and not self.IsReserved(2,3):
+		elif (x >= 210 and x <=310) and (y >= 130 and y <= 230):
 			row = 2
 			column = 3
 
-		elif (x >= 10 and x <=110) and (y >=230 and y <= 330) and not self.IsReserved(3,1):
+		elif (x >= 10 and x <=110) and (y >=230 and y <= 330):
 			row = 3
 			column = 1
 
-		elif (x >=110 and x <=210) and (y >=230 and y <=330) and not self.IsReserved(3,2):
+		elif (x >=110 and x <=210) and (y >=230 and y <=330):
 			row = 3
 			column = 2
 
-		elif (x >= 210 and x <= 310) and (y >= 230 and y <=330) and not self.IsReserved(3,3):
+		elif (x >= 210 and x <= 310) and (y >= 230 and y <=330):
 			row = 3
 			column = 3
 
@@ -142,53 +174,8 @@ class GameBoard:
 
 		self.playerRow=row
 		self.playerColumn=column
-
 		#Clear out the message if there is one.
-		self.ClearPlayerMessage()
 
-		if self.playerTurn:
-
-			if self.IsReserved(row, column):
-				self.ClearPlayerMessage()
-				self.SetPlayerMessage("SPOT ALREADY TAKEN!\nSELECT AGAIN!")
-
-			else:
-
-				if row == 1 and column == 1 and not self.IsReserved(row, column):
-					self.canvas.create_text(60, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 1 and column == 2 and not self.IsReserved(row, column):
-					self.canvas.create_text(160,80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 1 and column == 3 and not self.IsReserved(row, column):
-					self.canvas.create_text(260, 80, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 2 and column == 1 and not self.IsReserved(row, column):
-					self.canvas.create_text(60, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 2 and column == 2 and not self.IsReserved(row, column):
-					self.canvas.create_text(160, 180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 2 and column == 3 and not self.IsReserved(row, column):
-					self.canvas.create_text(260,180, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 3 and column == 1 and not self.IsReserved(row, column):
-					self.canvas.create_text(60,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 3 and column == 2 and not self.IsReserved(row, column):
-					self.canvas.create_text(160,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
-
-				elif row == 3 and column == 3 and not self.IsReserved(row, column):
-					self.canvas.create_text(260,280, text=self.playerToken, fill=self.playerColor, font='Helevetica, 25 bold')
-					self.ReservedSpots.append(row_column)
 
 
 
@@ -271,10 +258,38 @@ class GameBoard:
 	def SetPlayerMessage(self, message):
 		self.userMessage.config(text=message)
 
+	def SetPosLabel(self, row, column, icon, color):
+		if row == 1 and column == 1:
+			self.board1_1.config(text=icon, fg=color)
+		elif row == 1 and column == 2:
+			self.board1_2.config(text=icon, fg=color)
+
+		elif row == 1 and column == 3:
+			self.board1_3.config(text=icon, fg=color)
+
+		elif row == 2 and column == 1:
+			self.board2_1.config(text=icon, fg=color)
+
+		elif row == 2 and column == 2:
+			self.board2_2.config(text=icon, fg=color)
+
+		elif row == 2 and column == 3:
+			self.board2_3.config(text=icon, fg=color)
+
+		elif row == 3 and column == 1:
+			self.board3_1.config(text=icon, fg=color)
+
+		elif row == 3 and column == 2:
+			self.board3_2.config(text=icon, fg=color)
+
+		elif row == 3 and column == 3:
+			self.board3_3.config(text=icon, fg=color)
+
 	#Def ClearPlayerMessage: Function clears any message notification text.
 	def ClearPlayerMessage(self):
 		self.userMessage.config(text="")
 
 
 	def Update(self):
+		#self.gameWindow.update_idletasks()
 		self.gameWindow.update()

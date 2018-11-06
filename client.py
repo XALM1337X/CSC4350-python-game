@@ -17,7 +17,58 @@ PORT = 61001
 ClientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ClientSocket.connect((HOST, PORT))
 ClientSocket.setblocking(0)
+def IsReserved(tmp):
+	if tmp not in Game.ReservedSpots:
+		return False
+	else:
+		return True
+
 #def read_packet: Function reads in one packet sent from the server.
+def drawPos(row, column, icon, color):
+	Game.ClearPlayerMessage()
+	tmp = str(row)+","+str(column)
+	if IsReserved(tmp):
+		Game.ClearPlayerMessage()
+		Game.SetPlayerMessage("SPOT ALREADY TAKEN!\nSELECT AGAIN!")
+
+	else:
+		if row == 1 and column == 1:
+			Game.SetPosLabel(1,1, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#1")
+		elif row == 1 and column == 2:
+			Game.SetPosLabel(1,2, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#2")
+		elif row == 1 and column == 3:
+			Game.SetPosLabel(1,3, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#3")
+		elif row == 2 and column == 1:
+			Game.SetPosLabel(2,1, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#4")
+		elif row == 2 and column == 2:
+			Game.SetPosLabel(2,2, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#5")
+		elif row == 2 and column == 3:
+			Game.SetPosLabel(2,3, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#6")
+		elif row == 3 and column == 1:
+			Game.SetPosLabel(3,1, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#7")
+		elif row == 3 and column == 2:
+			Game.SetPosLabel(3,2, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#8")
+		elif row == 3 and column == 3:
+			Game.SetPosLabel(3,3, icon, color)
+			Game.ReservedSpots.append(str(row)+","+str(column))
+			print("DATATRIGGER#9")
+		Game.canvas.pack()
 
 def read_packet():
 	receivedData = ""
@@ -34,47 +85,82 @@ def read_packet():
 #
 #Function will sequentially play the game.
 def playGame():
+	init_session()
+	end_turn_flag=False
+	PlayerQuery=""
 	ClientSocket.send("turncheck".encode())
 	incomingData = read_packet()
 	Game.Update()
 	while "winner" not in incomingData:
-		incomingData = read_packet()
-		Game.Update()
+		PlayerQuery =""
+
 		if "your_turn" in incomingData:
-			print("Its your turn.")
+			Game.playerTurn = True
+			PlayerQuery="poscheck:"
+			print("Its your turn:")
 			Game.SetPlayerMessage("IT'S YOUR TURN!")
 			#Client.Socket.send("poscheck")
 			if Game.playerRow != 0 and Game.playerColumn != 0:
-				outgoing = "poscheck:"+str(Game.playerRow)+","+str(Game.playerColumn)
-				ClientSocket.send(outgoing.encode())
-				Game.playerRow =0
-				Game.playerColumn =0
-
-		if "not_turn" in incomingData:
-			print("its not my turn")
+				print(str(Game.playerRow)+str(Game.playerColumn))
+				PlayerQuery = PlayerQuery+str(Game.playerRow)+","+str(Game.playerColumn)
+				incomingData =""
+			else:
+				print("Waiting on player selection.")
+				PlayerQuery = PlayerQuery+"0,0"
+				incomingData =""
 		if "spot_taken" in incomingData:
 			Game.SetPlayerMessage("This spot is taken! Try again.")
-
+			PlayerQuery ="turncheck:"
+			incomingData =""
+			Game.playerRow =0
+			Game.playerColumn =0
 		if "spot_open" in incomingData:
-			Game.reservedSpots.append(Game.playerRow,Game.playerColumn)
-			ClientSocket.send(("end_turn:"+str(Game.playerRow)+","+str(Game.playerColumn)).encode())
+			print("spot_open")
+			drawPos(Game.playerRow,Game.playerColumn, Game.playerToken, Game.playerColor)
+			incomingData =""
+			PlayerQuery ="end_turn:"+str(Game.playerRow)+","+str(Game.playerColumn)
+			ClientSocket.send(PlayerQuery.encode())
+			end_turn_flag = True
+			Game.playerTurn == False
+			Game.playerRow =0
+			Game.playerColumn =0
+			time.sleep(5)
+
+		if "not_turn" in incomingData:
+			incomingData =""
+			Game.playerTurn == False
+			Game.playerRow =0
+			Game.playerColumn =0
+			PlayerQuery ="turncheck:"
+			print("its not my turn")
 
 
 
-		ClientSocket.send("turncheck".encode())
-		incomingData = read_packet()
+
+
+		if Game.playerTurn == False:
+			ClientSocket.send("turncheck:".encode())
+		else:
+			if end_turn_flag == True:
+				PlayerQuery ="turncheck:"
+				end_turn_flag = False
+			ClientSocket.send(PlayerQuery.encode())
+		#incomingData = read_packet()
+		time.sleep(1.5)
 		Game.Update()
-		time.sleep(.5)
-	if "1" in incomingData:
-		typeOfWin = incomingData.split(":")[1].split(",")[1]
-		Game.ClearPlayerMessage()
-		Game.SetPlayerMessage("YOU WIN!")
-		DrawWinner(typeOfWin)
-	elif "0" in incomingData:
-		typeOfWin = incomingData.split(":")[1].split(",")[1]
-		Game.ClearPlayerMessage()
-		Game.SetPlayerMessage("YOU LOSE!")
-		DrawWinner(typeOfWin)
+		incomingData=""
+		incomingData = read_packet()
+
+	#if "1" in incomingData:
+	#	typeOfWin = incomingData.split(":")[1].split(",")[1]
+	#	Game.ClearPlayerMessage()
+	#	Game.SetPlayerMessage("YOU WIN!")
+	#	DrawWinner(typeOfWin)
+	#elif "0" in incomingData:
+	#	typeOfWin = incomingData.split(":")[1].split(",")[1]
+	#	Game.ClearPlayerMessage()
+	#	Game.SetPlayerMessage("YOU LOSE!")
+	#	DrawWinner(typeOfWin)
 
 
 
@@ -83,14 +169,19 @@ def init_session():
 
 	#Init game variables.
 	ClientSocket.send("init:,".encode())
+	time.sleep(1)
 	Game.playerToken = read_packet().split(":")[0]
+	time.sleep(1)
 	Game.playerColor = read_packet().split(":")[0]
+	time.sleep(1)
 	Game.opponentToken = read_packet().split(":")[0]
+	time.sleep(1)
 	Game.opponentColor = read_packet().split(":")[0]
-	print(Game.playerToken)
-	print(Game.playerColor)
-	print(Game.opponentToken)
-	print(Game.opponentColor)
+
+	print("playerToken: "+Game.playerToken)
+	print("playerColor: "+Game.playerColor)
+	print("opponentToken: "+Game.opponentToken)
+	print("opponentColor: "+Game.opponentColor)
 
 	#Notify the player that they are connected to the game.
 	Game.SetPlayerMessage("CONNECTED!")
@@ -98,8 +189,7 @@ def init_session():
 
 
 def main():
-
-	Game.gameWindow.after(0, init_session)
+	time.sleep(5)
 	p = Process(target=playGame)
 	p.start()
 	p.join()

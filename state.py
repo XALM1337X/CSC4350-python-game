@@ -3,7 +3,7 @@ class StateOfGame():
 		self.playerTurn = ""
 		self.players = []
 		self.LastPlayerMove =""
-		self.reservedSpots = []
+		self.reservedSpots = ["0,0"]
 
 class Player(object):
 	def __init__(self, Ip, Port, Soc):
@@ -12,3 +12,4 @@ class Player(object):
 		self.playerIcon = ""
 		self.playerColor = ""
 		self.playerSocket = Soc
+		self.playerTurn = False
